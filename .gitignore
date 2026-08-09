@@ -1,0 +1,40 @@
+# CMake and build files
+/build/
+/build-*/
+bin/
+lib/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+compile_commands.json
+
+# Object and executable files
+*.o
+*.obj
+*.so
+*.dylib
+*.a
+*.exe
+*.out
+stuman
+
+# VS Code
+.vscode/
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/c_cpp_properties.json
+
+# CLion / JetBrains
+.idea/
+
+# Visual Studio
+.vs/
+*.vcxproj
+*.sln
+
+# macOS / OS X
+.DS_Store
+
+*.dat
+*.db
