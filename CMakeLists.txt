@@ -10,6 +10,7 @@ set(CMAKE_C_EXTENSIONS OFF)
 
 set(SOURCES
     src/main.c
+    src/student.c
 )
 
 add_executable(stuman ${SOURCES})

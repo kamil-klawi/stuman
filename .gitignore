@@ -17,7 +17,6 @@ compile_commands.json
 *.a
 *.exe
 *.out
-stuman
 
 # VS Code
 .vscode/*
