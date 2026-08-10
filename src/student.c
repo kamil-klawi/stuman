@@ -23,8 +23,12 @@ Student* student_create(
     const char *address
 )
 {
-    Student* student = malloc(sizeof(Student));
+    if(!first_name || !last_name || !pesel || !address)
+    {
+        return NULL;
+    }
 
+    Student* student = malloc(sizeof(Student));
     if(!student)
     {
         return NULL;
