@@ -10,6 +10,7 @@ set(CMAKE_C_EXTENSIONS OFF)
 
 set(SOURCES
     src/main.c
+    src/student.c
 )
 
 add_executable(stuman ${SOURCES})
@@ -33,3 +34,23 @@ else()
 endif()
 
 set_target_properties(stuman PROPERTIES COMPILE_WARNING_AS_ERROR ON)
+
+# UNIT TESTS
+
+enable_testing()
+
+add_executable(unit_tests
+    tests/test_student.c
+    tests/unity/unity.c
+    src/student.c
+)
+
+target_include_directories(unit_tests PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unity
+)
+
+target_compile_options(unit_tests PRIVATE ${COMMON_COMPILE_OPTIONS})
+set_target_properties(unit_tests PROPERTIES COMPILE_WARNING_AS_ERROR ON)
+
+add_test(NAME StudentUnitTests COMMAND unit_tests)
