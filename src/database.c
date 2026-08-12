@@ -166,3 +166,29 @@ bool remove_student_by_pesel(Database *database, const char *pesel)
 
     return true;
 }
+
+/**
+ * @brief Find a student from the database record
+ *
+ * @param[in,out] database Pointer to the Database structure
+ * @param[in]     id       The student ID
+ *
+ * @return Pointer to the allocated Student object within the database if found, or NULL if not found
+ */
+Student* find_student_by_id(const Database *database, uint32_t id)
+{
+    if(!database || !database->students || database->size == 0)
+    {
+        return NULL;
+    }
+
+    for (size_t i = 0; i < database->size; i++)
+    {
+        if(database->students[i].id == id)
+        {
+            return &database->students[i];
+        }
+    }
+
+    return NULL;
+}

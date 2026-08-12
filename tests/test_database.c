@@ -56,6 +56,19 @@ static void test_database_remove_student_by_pesel(void)
     destroy_database(database);
 }
 
+static void test_database_find_student_by_id(void)
+{
+    Database* database = create_database();
+    Gender gender = MALE;
+    Student* student = student_create(1, "John", "Mark", "12345678901", gender, "ul. Niszowa");
+
+    TEST_ASSERT_TRUE(add_student(database, student));
+    TEST_ASSERT_NOT_NULL(find_student_by_id(database, student->id));
+    TEST_ASSERT_TRUE(remove_student_by_pesel(database, student->pesel));
+
+    destroy_database(database);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -64,5 +77,6 @@ int main(void)
     RUN_TEST(test_database_add_students);
     RUN_TEST(test_database_remove_student_by_id);
     RUN_TEST(test_database_remove_student_by_pesel);
+    RUN_TEST(test_database_find_student_by_id);
     return UNITY_END();
 }
