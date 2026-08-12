@@ -123,3 +123,46 @@ bool remove_student_by_id(Database *database, uint32_t id)
 
     return true;
 }
+
+/**
+ * @brief Remove a student from the database record
+ *
+ * @param[in,out] database Pointer to the Database structure
+ * @param[in]     pesel    The student PESEL
+ *
+ * @return True if the student was removed successfully, false otherwise
+ */
+bool remove_student_by_pesel(Database *database, const char *pesel)
+{
+    if(!database || !database->students || database->size == 0 || !pesel)
+    {
+        return false;
+    }
+
+    size_t index = database->size;
+    for (size_t i = 0; i < database->size; i++)
+    {
+        if(strcmp(database->students[i].pesel, pesel) == 0)
+        {
+            index = i;
+            break;
+        }
+    }
+
+    if(index == database->size)
+    {
+        return false;
+    }
+
+    student_destroy(&database->students[index]);
+
+    for (size_t i = index; i < database->size - 1; i++)
+    {
+        database->students[i] = database->students[i + 1];
+    }
+
+    database->size--;
+    memset(&database->students[database->size], 0, sizeof(Student));
+
+    return true;
+}
