@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "stuman/database.h"
 
 /**
@@ -76,6 +77,49 @@ bool add_student(Database *database, const Student *student)
 
     database->students[database->size] = *student;
     database->size++;
+
+    return true;
+}
+
+/**
+ * @brief Remove a student from the database record
+ *
+ * @param[in,out] database Pointer to the Database structure
+ * @param[in]     id       The student ID
+ *
+ * @return True if the student was removed successfully, false otherwise
+ */
+bool remove_student_by_id(Database *database, uint32_t id)
+{
+    if(!database || !database->students || database->size == 0)
+    {
+        return false;
+    }
+
+    size_t index = database->size;
+    for (size_t i = 0; i < database->size; i++)
+    {
+        if(database->students[i].id == id)
+        {
+            index = i;
+            break;
+        }
+    }
+
+    if(index == database->size)
+    {
+        return false;
+    }
+
+    student_destroy(&database->students[index]);
+
+    for (size_t i = index; i < database->size - 1; i++)
+    {
+        database->students[i] = database->students[i + 1];
+    }
+
+    database->size--;
+    memset(&database->students[database->size], 0, sizeof(Student));
 
     return true;
 }

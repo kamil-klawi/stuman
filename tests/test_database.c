@@ -32,11 +32,24 @@ static void test_database_add_students(void)
     destroy_database(database);
 }
 
+static void test_database_remove_student_by_id(void)
+{
+    Database* database = create_database();
+    Gender gender = MALE;
+    Student* student = student_create(1, "John", "Mark", "12345678901", gender, "ul. Niszowa");
+
+    TEST_ASSERT_TRUE(add_student(database, student));
+    TEST_ASSERT_TRUE(remove_student_by_id(database, student->id));
+
+    destroy_database(database);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
     RUN_TEST(test_database_create_success);
     RUN_TEST(test_database_destroy_null_safe);
     RUN_TEST(test_database_add_students);
+    RUN_TEST(test_database_remove_student_by_id);
     return UNITY_END();
 }
