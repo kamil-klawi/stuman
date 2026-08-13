@@ -222,7 +222,7 @@ Student* find_student_by_pesel(const Database *database, const char *pesel)
 /**
  * @brief Display all students details from the database
  *
- * @param[in,out] database
+ * @param[in,out] database Pointer to the Database structure
  */
 void display_all_students(const Database *database)
 {
@@ -243,4 +243,21 @@ void display_all_students(const Database *database)
             database->students[i].grades_avg
         );
     }
+}
+
+/**
+ * @brief Display the current number of students in the database
+ *
+ * @param[in,out] database Pointer to the Database structure
+ *
+ * @return The number of students currently stored in the database
+ */
+size_t display_database_size(const Database *database)
+{
+    if(!database || !database->students || database->size == 0)
+    {
+        return INITIAL_DATABASE_SIZE;
+    }
+
+    return database->size;
 }

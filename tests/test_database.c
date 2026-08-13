@@ -100,6 +100,24 @@ static void test_database_display_all_students(void)
     destroy_database(database);
 }
 
+static void test_database_display_database_size(void)
+{
+    Database* database = create_database();
+    Gender male = MALE;
+    Gender female = FEMALE;
+    Student* student = student_create(1, "John", "Mark", "12345678901", male, "ul. Niszowa");
+    Student* student1 = student_create(2, "Emily", "Mark", "12345678901", female, "ul. Niszowa");
+    Student* student2 = student_create(3, "Steve", "Mark", "12345678901", male, "ul. Niszowa");
+
+    add_student(database, student);
+    add_student(database, student1);
+    add_student(database, student2);
+
+    TEST_ASSERT_EQUAL_size_t(3, display_database_size(database));
+
+    destroy_database(database);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -111,5 +129,6 @@ int main(void)
     RUN_TEST(test_database_find_student_by_id);
     RUN_TEST(test_database_find_student_by_pesel);
     RUN_TEST(test_database_display_all_students);
+    RUN_TEST(test_database_display_database_size);
     return UNITY_END();
 }
