@@ -218,3 +218,29 @@ Student* find_student_by_pesel(const Database *database, const char *pesel)
 
     return NULL;
 }
+
+/**
+ * @brief Display all students details from the database
+ *
+ * @param[in,out] database
+ */
+void display_all_students(const Database *database)
+{
+    if(!database || !database->students || database->size == 0)
+    {
+        perror("Students does not exist!");
+    }
+
+    printf("\n%-6s | %-20s | %-30s | %-7s\n", "ID", "First Name", "Last Name", "Average Grade");
+    printf("------------------------------------------------------------------------------\n");
+
+    for(size_t i = 0; i < database->size; i++)
+    {
+        printf("%-6d | %-20s | %-30s | %-7.2f\n",
+            database->students[i].id,
+            database->students[i].first_name,
+            database->students[i].last_name,
+            database->students[i].grades_avg
+        );
+    }
+}
