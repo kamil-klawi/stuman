@@ -261,3 +261,44 @@ size_t display_database_size(const Database *database)
 
     return database->size;
 }
+
+/**
+ * @brief Saves database records to binary file
+ *
+ * @param[in] database Pointer to the Database structure to be saved
+ * @param[in] path     Destination file path
+ */
+void save_database_to_file(const Database *database, const char *path)
+{
+    if (!database || !path || !database->students)
+    {
+        return;
+    }
+
+    FILE *file = fopen(path, "wb");
+    if(file == NULL)
+    {
+        perror("Error opening file for writing");
+        return;
+    }
+
+    if(fwrite(&database->size, sizeof(database->size), 1, file) != 1)
+    {
+        perror("Error writing database size");
+        fclose(file);
+        return;
+    }
+
+    if(database->size > 0)
+    {
+        size_t written_items = fwrite(database->students, sizeof(Student), database->size, file);
+        if (written_items != database->size) {
+            perror("Error writing student records");
+            fclose(file);
+            return;
+        }
+    }
+
+    fclose(file);
+    printf("Successfully saved the database");
+}
