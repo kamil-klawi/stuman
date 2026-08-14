@@ -136,6 +136,37 @@ static void test_save_database_to_file(void)
     destroy_database(database);
 }
 
+static void test_save_and_open_empty_database(void)
+{
+    Database* database = create_database();
+    save_database_to_file(database, DEFAULT_DATABASE_BIN_PATH);
+    open_database_from_file(database, DEFAULT_DATABASE_BIN_PATH);
+
+    TEST_ASSERT_EQUAL_UINT(0, database->size);
+    destroy_database(database);
+}
+
+static void test_save_and_open_database(void)
+{
+    Database* database = create_database();
+    Gender male = MALE;
+    Gender female = FEMALE;
+    Student* student = student_create(1, "John", "Mark", "12345678901", male, "ul. Niszowa");
+    Student* student1 = student_create(2, "Emily", "Mark", "12345678901", female, "ul. Niszowa");
+    Student* student2 = student_create(3, "Steve", "Mark", "12345678901", male, "ul. Niszowa");
+
+    add_student(database, student);
+    add_student(database, student1);
+    add_student(database, student2);
+
+    save_database_to_file(database, DEFAULT_DATABASE_BIN_PATH);
+    open_database_from_file(database, DEFAULT_DATABASE_BIN_PATH);
+
+    TEST_ASSERT_EQUAL_UINT(3, database->size);
+
+    destroy_database(database);
+}
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -149,5 +180,7 @@ int main(void)
     RUN_TEST(test_database_display_all_students);
     RUN_TEST(test_database_display_database_size);
     RUN_TEST(test_save_database_to_file);
+    RUN_TEST(test_save_and_open_empty_database);
+    RUN_TEST(test_save_and_open_database);
     return UNITY_END();
 }
