@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <cjson/cJSON.h>
 #include "stuman/database.h"
 
 /**
@@ -351,4 +352,94 @@ void open_database_from_file(Database *database, const char *path)
 
     fclose(file);
     printf("Successfully loaded %zu records from %s\n", new_size, path);
+}
+
+/**
+ * @brief Saves database records to a JSON file
+ *
+ * @param[in] database Pointer to the Database structure to save
+ * @param[in] path     Destination JSON file path
+ */
+void save_database_to_json(const Database *database, const char *path)
+{
+    if(!database || !path)
+    {
+        fprintf(stderr, "Invalid argument passed to save_database_to_json\n");
+        return;
+    }
+
+    cJSON *root = cJSON_CreateObject();
+    if (root == NULL)
+    {
+        fprintf(stderr, "Failed to allocate memory for JSON object\n");
+        return;
+    }
+
+    cJSON *students_array = cJSON_CreateArray();
+    if (students_array == NULL)
+    {
+        fprintf(stderr, "Failed to allocate memory for JSON array\n");
+        cJSON_Delete(root);
+        return;
+    }
+    cJSON_AddItemToObject(root, "students", students_array);
+
+
+    if (database->students != NULL)
+    {
+        for (size_t i = 0; i < database->size; i++)
+        {
+            cJSON *student_obj = cJSON_CreateObject();
+            if (student_obj == NULL)
+            {
+                continue;
+            }
+
+            cJSON_AddNumberToObject(student_obj, "id", database->students[i].id);
+            cJSON_AddStringToObject(student_obj, "first_name", database->students[i].first_name);
+            cJSON_AddStringToObject(student_obj, "last_name", database->students[i].last_name);
+            cJSON_AddStringToObject(student_obj, "pesel", database->students[i].pesel);
+            cJSON_AddStringToObject(student_obj, "address", database->students[i].address);
+            cJSON_AddStringToObject(student_obj, "gender", student_gender_to_string(database->students[i].gender));
+
+            if (database->students[i].grades != NULL && database->students[i].grades_count > 0)
+            {
+                cJSON *grades_array = cJSON_CreateDoubleArray(
+                    database->students[i].grades,
+                    (int)database->students[i].grades_count
+                );
+                cJSON_AddItemToObject(student_obj, "grades", grades_array);
+            } else
+            {
+                cJSON_AddItemToObject(student_obj, "grades", cJSON_CreateArray());
+            }
+            cJSON_AddNumberToObject(student_obj, "grades_avg", database->students[i].grades_avg);
+            cJSON_AddItemToArray(students_array, student_obj);
+        }
+    }
+
+    char *json_string = cJSON_Print(root);
+    if (json_string == NULL)
+    {
+        fprintf(stderr, "Failed to render JSON string.\n");
+        cJSON_Delete(root);
+        return;
+    }
+
+    FILE *file = fopen(path, "w");
+    if (file == NULL)
+    {
+        perror("Error opening file for JSON write");
+        cJSON_free(json_string);
+        cJSON_Delete(root);
+        return;
+    }
+
+    fputs(json_string, file);
+
+    fclose(file);
+    cJSON_free(json_string);
+    cJSON_Delete(root);
+
+    printf("Successfully saved %zu records to %s (JSON)\n", database->size, path);
 }

@@ -7,6 +7,8 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
+find_package(cJSON REQUIRED)
+
 if(MSVC)
     set(COMMON_COMPILE_OPTIONS /W4 /WX)
 else()
@@ -31,6 +33,8 @@ add_library(stuman_lib STATIC
 target_include_directories(stuman_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_compile_options(stuman_lib PRIVATE ${COMMON_COMPILE_OPTIONS})
 set_target_properties(stuman_lib PROPERTIES COMPILE_WARNING_AS_ERROR ON)
+
+target_link_libraries(stuman_lib PUBLIC cjson)
 
 add_executable(stuman src/main.c)
 target_link_libraries(stuman PRIVATE stuman_lib)
