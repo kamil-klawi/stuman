@@ -176,7 +176,7 @@ static void test_save_json_null_parameters(void)
 
 static void test_save_database_to_json(void)
 {
-        Database* database = create_database();
+    Database* database = create_database();
     Gender male = MALE;
     Gender female = FEMALE;
     Student* student = student_create(1, "John", "Mark", "12345678901", male, "ul. Niszowa");
@@ -188,6 +188,30 @@ static void test_save_database_to_json(void)
     add_student(database, student2);
 
     save_database_to_json(database, DEFAULT_DATABASE_JSON_PATH);
+
+    destroy_database(database);
+}
+
+static void test_open_database_from_json(void)
+{
+    Database* database = create_database();
+
+    Student* student  = student_create(1, "John",  "Mark", "12345678901", MALE,   "ul. Niszowa");
+    Student* student1 = student_create(2, "Emily", "Mark", "12345678901", FEMALE, "ul. Niszowa");
+    Student* student2 = student_create(3, "Steve", "Mark", "12345678901", MALE,   "ul. Niszowa");
+
+    add_student(database, student);
+    add_student(database, student1);
+    add_student(database, student2);
+
+    save_database_to_json(database, DEFAULT_DATABASE_JSON_PATH);
+    destroy_database(database);
+
+    database = create_database();
+    open_database_from_json(database, DEFAULT_DATABASE_JSON_PATH);
+
+    TEST_ASSERT_EQUAL_UINT64(3, database->size);
+    TEST_ASSERT_EQUAL_STRING("John", database->students[0].first_name);
 
     destroy_database(database);
 }
@@ -209,5 +233,6 @@ int main(void)
     RUN_TEST(test_save_and_open_database);
     RUN_TEST(test_save_json_null_parameters);
     RUN_TEST(test_save_database_to_json);
+    RUN_TEST(test_open_database_from_json);
     return UNITY_END();
 }

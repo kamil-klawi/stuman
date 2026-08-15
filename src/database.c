@@ -443,3 +443,136 @@ void save_database_to_json(const Database *database, const char *path)
 
     printf("Successfully saved %zu records to %s (JSON)\n", database->size, path);
 }
+
+/**
+ * @brief Helper for open_database_from_json function
+ */
+static void parse_student(const cJSON *item, Student *student)
+{
+    memset(student, 0, sizeof(*student));
+
+    cJSON *id = cJSON_GetObjectItemCaseSensitive(item, "id");
+    cJSON *first_name = cJSON_GetObjectItemCaseSensitive(item, "first_name");
+    cJSON *last_name = cJSON_GetObjectItemCaseSensitive(item, "last_name");
+    cJSON *pesel = cJSON_GetObjectItemCaseSensitive(item, "pesel");
+    cJSON *address = cJSON_GetObjectItemCaseSensitive(item, "address");
+    cJSON *gender = cJSON_GetObjectItemCaseSensitive(item, "gender");
+    cJSON *grades = cJSON_GetObjectItemCaseSensitive(item, "grades");
+    cJSON *grades_avg = cJSON_GetObjectItemCaseSensitive(item, "grades_avg");
+
+    if (cJSON_IsNumber(id))
+    {
+        student->id = (uint32_t)id->valueint;
+    }
+
+    if (cJSON_IsString(first_name) && first_name->valuestring)
+    {
+        strncpy(student->first_name, first_name->valuestring, sizeof(student->first_name) - 1);
+    }
+
+    if (cJSON_IsString(last_name) && last_name->valuestring)
+    {
+        strncpy(student->last_name, last_name->valuestring, sizeof(student->last_name) - 1);
+    }
+
+    if (cJSON_IsString(pesel) && pesel->valuestring)
+    {
+        strncpy(student->pesel, pesel->valuestring, sizeof(student->pesel) - 1);
+    }
+
+    if (cJSON_IsString(address) && address->valuestring)
+    {
+        strncpy(student->address, address->valuestring, sizeof(student->address) - 1);
+    }
+
+    if (cJSON_IsString(gender) && gender->valuestring)
+    {
+        student->gender = student_gender_from_string(gender->valuestring);
+    }
+
+    if (cJSON_IsNumber(grades_avg))
+    {
+        student->grades_avg = grades_avg->valuedouble;
+    }
+
+    if (cJSON_IsArray(grades)) {
+        int32_t count = cJSON_GetArraySize(grades);
+        if (count > 0 && (student->grades = malloc((size_t)count * sizeof(double))))
+        {
+            student->grades_count = (size_t)count;
+            uint32_t index = 0;
+            cJSON *g = NULL;
+            cJSON_ArrayForEach(g, grades)
+            {
+                if (cJSON_IsNumber(g)) student->grades[index++] = g->valuedouble;
+            }
+        }
+    }
+}
+
+/**
+ * @brief Opens a json file and loads database records into memory
+ *
+ * @param[in,out] database Pointer to the Database structure to be saved
+ * @param[in]     path     Destination file path
+ */
+void open_database_from_json(Database *database, const char *path)
+{
+    if(!database || !path)
+    {
+        return;
+    }
+
+    FILE *file = fopen(path, "rb");
+    if(!file)
+    {
+        perror("Error opening JSON file");
+        return;
+    }
+
+    fseek(file, 0, SEEK_END);
+    int64_t length = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    if(length <= 0)
+    {
+        fclose(file); return;
+    }
+
+    char *buffer = malloc((size_t)length + 1);
+    if(!buffer)
+    {
+        fclose(file);
+        return;
+    }
+
+    size_t read_bytes = fread(buffer, 1, (size_t)length, file);
+    fclose(file);
+    buffer[read_bytes] = '\0';
+
+    cJSON *root = cJSON_Parse(buffer);
+    free(buffer);
+    if (!root)
+    {
+        return;
+    }
+
+    cJSON *students_array = cJSON_GetObjectItemCaseSensitive(root, "students");
+    if (cJSON_IsArray(students_array))
+    {
+        cJSON *student_json = NULL;
+        cJSON_ArrayForEach(student_json, students_array)
+        {
+            if (cJSON_IsObject(student_json))
+            {
+                Student student;
+                parse_student(student_json, &student);
+                add_student(database, &student);
+                free(student.grades);
+            }
+        }
+    }
+
+    cJSON_Delete(root);
+    printf("Successfully loaded records from %s (JSON)\n", path);
+}
