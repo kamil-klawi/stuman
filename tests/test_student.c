@@ -5,7 +5,7 @@ void setUp(void) {}
 
 void tearDown(void) {}
 
-void test_student_create_success(void)
+static void test_student_create_success(void)
 {
     Gender gender = MALE;
     Student *student = student_create(1, "John", "Mark", "12345678901", gender, "ul. Niszowa");
@@ -19,12 +19,12 @@ void test_student_create_success(void)
     student_destroy(student);
 }
 
-void test_student_destroy_null_safe(void)
+static void test_student_destroy_null_safe(void)
 {
     student_destroy(NULL);
 }
 
-void test_student_create_null_arguments(void)
+static void test_student_create_null_arguments(void)
 {
     Gender gender = MALE;
     Student *student = student_create(1, NULL, "Kowalski", "12345678901", gender, "ul. Wiejska 1");
@@ -32,7 +32,7 @@ void test_student_create_null_arguments(void)
     student_destroy(student);
 }
 
-void test_student_add_grade_valid_and_invalid_values(void)
+static void test_student_add_grade_valid_and_invalid_values(void)
 {
     Gender gender = MALE;
     Student *student = student_create(1, "Jan", "Kowalski", "12345678901", gender, "ul. Wiejska 1");
@@ -50,7 +50,7 @@ void test_student_add_grade_valid_and_invalid_values(void)
     student_destroy(student);
 }
 
-void test_student_get_average_no_grades(void)
+static void test_student_get_average_no_grades(void)
 {
     Gender gender = MALE;
     Student *student = student_create(1, "Jan", "Kowalski", "12345678901", gender, "ul. Wiejska 1");

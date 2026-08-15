@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "stuman/student.h"
 
 /**
@@ -133,7 +134,7 @@ bool student_get_average_grade(Student *student)
 /**
  * @brief Converts a Gender enum value to string
  *
- * @param[in] gender The Gender enum value to convert.
+ * @param[in] gender The Gender enum value to convert
  *
  * @return Const pointer to a string literal
  */
@@ -148,6 +149,33 @@ const char* student_gender_to_string(Gender gender)
         default:
             return "Unknown";
     }
+}
+
+/**
+ * @brief Converts a string to a Gender enum value
+ *
+ * @param[in] str String representation of the gender
+ *
+ * @return Gender enum value corresponding to the string
+ */
+Gender student_gender_from_string(const char *str)
+{
+    if(str == NULL)
+    {
+        return UNKNOWN;
+    }
+
+    if (strcmp(str, "Male") == 0)
+    {
+        return MALE;
+    }
+
+    if (strcmp(str, "Female") == 0)
+    {
+        return FEMALE;
+    }
+
+    return UNKNOWN;
 }
 
 /**

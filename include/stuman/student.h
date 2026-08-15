@@ -43,7 +43,8 @@
 
 typedef enum {
     MALE,
-    FEMALE
+    FEMALE,
+    UNKNOWN,
 } Gender;
 
 typedef struct {
@@ -64,6 +65,7 @@ typedef struct {
  * Exported Functions
  *****************************************************************************/
 
+/** Student lifecycle */
 Student* student_create(
     uint32_t id,
     const char *first_name,
@@ -72,15 +74,15 @@ Student* student_create(
     Gender gender,
     const char *address
 );
-
 void student_destroy(Student *student);
 
+/** Student operations */
 bool student_add_grade(Student *student, double grade);
-
 bool student_get_average_grade(Student *student);
-
-const char* student_gender_to_string(Gender gender);
-
 void display_student_details(const Student *student);
+
+/** Conversion helpers */
+const char* student_gender_to_string(Gender gender);
+Gender student_gender_from_string(const char *str);
 
 #endif // STUDENT_H
